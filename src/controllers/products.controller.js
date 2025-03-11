@@ -32,11 +32,13 @@ export async function getProductById(req,res){
 }
 export async function getProductByName(req,res){
     const {productName} = req.query
+
     try {
         if(!productName){
             return res.status(400).json({error:"Debes ingresar el nombre del producto"})
         }
-        const foundProduct = await Product.find({name:productName})
+        const regex = new RegExp(productName,"i")
+        const foundProduct = await Product.find({name:regex})
         if(foundProduct.length === 0){
             return res.status(404).json({error:"El producto no se encontro"})
         }
