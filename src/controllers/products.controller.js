@@ -47,6 +47,18 @@ export async function getProductByName(req,res){
         
     }
 }
+export async function getProductByCategory(req,res){
+      const {category} = req.query
+      try {
+        const foundProducts = await Product.find({ category: category})
+        if(foundProducts.length === 0){
+            return res.status(404).json({error:'No hay productos en esa categoria'})
+        }
+          return res.status(200).json(foundProducts)
+      } catch (error) {
+        
+      }
+}
 export async function saveProduct (req,res){
    const {name,description,category,price,stock,image,date} = req.body
    try {

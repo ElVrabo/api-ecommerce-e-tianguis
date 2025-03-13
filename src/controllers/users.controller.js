@@ -101,6 +101,23 @@ export async function signIn(req, res) {
   } catch (error) {}
 }
 
+export async function getUserById(req,res){
+  const {id} = req.params
+  try {
+    const foundUser = await User.findById(id)
+    if(!foundUser){
+      return res.status(404).json({error:"El usuario no se encontro"})
+    }
+       return res.status(200).json({user:{
+        name: foundUser.name,
+        email: foundUser.email,
+        phone: foundUser.phone
+       }})
+  } catch (error) {
+    
+  }
+}
+
 export async function verifyToken(req, res) {
   // const token = req.headers["authorization"]?.split(" ")[1];
   const token = req.cookies.token
