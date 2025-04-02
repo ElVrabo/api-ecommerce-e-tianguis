@@ -96,9 +96,16 @@ export async function signIn(req, res) {
     const token = await createAccesToken({ id: foundUserByEmail._id, role:foundUserByEmail.role });
     res.cookie("token", token);
     return res.status(200).json({ message: "Iniciaste sesion con exito", user:{
-      role:foundUserByEmail.role
+      id: foundUserByEmail._id,
+      name:foundUserByEmail.name,
+      email:foundUserByEmail.email,
+      phone:foundUserByEmail.phone,
+      role:foundUserByEmail.role,
+      date:foundUserByEmail.date
     } });
-  } catch (error) {}
+  } catch (error) {
+    return res.status(500).json({error:'Error interno del servidor'})
+  }
 }
 
 export async function getUserById(req,res){
@@ -109,15 +116,31 @@ export async function getUserById(req,res){
       return res.status(404).json({error:"El usuario no se encontro"})
     }
        return res.status(200).json({user:{
-        name: foundUser.name,
-        email: foundUser.email,
-        phone: foundUser.phone
+        id: foundUser._id,
+      name: foundUser.name,
+      email: foundUser.email,
+      phone: foundUser.phone,
+      role: foundUser.role,
+      date: foundUser.date
        }})
   } catch (error) {
     
   }
 }
 
+export async function updateUserById(req,res){
+  const {id} = req.params
+  const userData = req.body
+  try {
+    const foundUser = await User.findByIdAndUpdate(id,userData,{new:true})
+    if(!foundUser){
+      return res.status(404).json({error:"No se encontro al usuario"})
+    }
+     return res.status(200).json({message:'La informacion se actualizo con exito'})
+  } catch (error) {
+    
+  }
+}
 export async function verifyToken(req, res) {
   // const token = req.headers["authorization"]?.split(" ")[1];
   const token = req.cookies.token
@@ -137,7 +160,8 @@ export async function verifyToken(req, res) {
       name: foundUser.name,
       email: foundUser.email,
       phone: foundUser.phone,
-      role: foundUser.role
+      role: foundUser.role,
+      date: foundUser.date
     }});
   });
 }

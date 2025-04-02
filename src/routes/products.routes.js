@@ -7,7 +7,7 @@ import {authRequired} from "../middlewares/validatorToken.js"
 const productsRoutes = Router()
 
 
-productsRoutes.get('/products',authRequired,getProducts)
+productsRoutes.get('/products',getProducts)
 productsRoutes.get('/products/:id',getProductById)
 productsRoutes.get('/searchProduct', getProductByName)
 productsRoutes.get('/searchProductByCategory', getProductByCategory)

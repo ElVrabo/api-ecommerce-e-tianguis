@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from "cors"
+import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import usersRoutes from './routes/users.routes.js';
 import connectDB from './db.js';
@@ -17,7 +18,9 @@ app.use(cors({
     credentials:true
 }))
 app.use(express.json())
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser())
+app.use(morgan('dev'))
 app.use('/api', usersRoutes)
 app.use('/api', productsRoutes)
 app.use('/api', cartProductsRoutes)
