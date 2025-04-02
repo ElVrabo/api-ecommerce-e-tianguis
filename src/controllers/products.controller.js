@@ -82,7 +82,7 @@ export async function saveProduct(req, res) {
       name,
       description,
       category,
-      price,
+      price : `$ ${price} MXN`,
       stock,
       file,
       date,
