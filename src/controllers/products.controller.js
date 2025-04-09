@@ -91,7 +91,7 @@ export async function saveProduct(req, res) {
     await newProducts.save();
     return res
       .status(201)
-      .json({ message: "El producto se creo con exito en la base de datos" });
+      .json({ message: "El producto se creo con exito" });
   } catch (error) {
     console.log('a ocurrido el siguiente error', error)
   }

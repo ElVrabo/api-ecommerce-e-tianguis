@@ -15,14 +15,14 @@ export async function getCartProducts(req, res) {
 }
 
 export async function addCartProduct(req, res) {
-  const { name, description, price, stock, image, date } = req.body;
+  const { name, description, price, stock, file, date } = req.body;
   try {
     const newCartProduct = new cartProduct({
       name,
       description,
       price,
       stock,
-      image,
+      image:file,
       date,
       user:req.user.id
     });
@@ -30,7 +30,9 @@ export async function addCartProduct(req, res) {
     return res
       .status(201)
       .json({ message: "EL producto se agrego al carrito correctamente" });
-  } catch (error) {}
+  } catch (error) {
+    return res.status(500).json({error:error})
+  }
 }
 
 export async function deleteCartProductById(req, res) {
