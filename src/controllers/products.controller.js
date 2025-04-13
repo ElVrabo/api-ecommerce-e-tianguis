@@ -1,4 +1,5 @@
 import Product from "../models/products.model.js";
+import Review from "../models/reviewProducts.js"
 import jwt from "jsonwebtoken"
 import dotenv from "dotenv"
 
@@ -125,3 +126,37 @@ export async function updateProductById(req, res) {
       .json({ message: "El producto se actualizo con exito" });
   } catch (error) {}
 }
+
+export async function insertReviewProduct(req,res){
+  const {productId, userId,rating,comment,date} = req.body
+  try {
+    const review = new Review({
+      product:productId,
+      user:userId,
+      rating,
+      comment,
+      date
+    })
+    await review.save()
+    return res.status(201).json({message:'La reseña se creo con exito'})
+  } catch (error) {
+    console.log('A ocurrio el siguiente error', error)
+    return res.status(500).json({error:'Errror interno del servidor', error})
+  }
+}
+
+export async function getReviewProduct(req,res){
+  const {id} = req.params
+  try {
+    const listReviews = await Review.find({product:id})
+    if(listReviews.length <=0){
+      return res.status(404).json({error:'El producto no tiene reseñas'})
+    }
+      return res.status(200).json(listReviews)
+  } catch (error) {
+    console.log('A ocurrido el siguiente error', error)
+    return res.status(500).json({error:'Error interno del servidor'})
+  }
+}
+
+

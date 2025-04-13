@@ -1,6 +1,7 @@
 import { Router } from "express";
-import { deleteProductById, getProductByCategory, getProductById, getProductByName, getProducts, saveProduct, updateProductById } from "../controllers/products.controller.js";
+import { deleteProductById, getProductByCategory, getProductById, getProductByName, getProducts, getReviewProduct, insertReviewProduct, saveProduct, updateProductById } from "../controllers/products.controller.js";
 import {authRequired} from "../middlewares/validatorToken.js"
+import reviewProducts from "../models/reviewProducts.js";
 
 
 
@@ -11,7 +12,9 @@ productsRoutes.get('/products',getProducts)
 productsRoutes.get('/products/:id',getProductById)
 productsRoutes.get('/searchProduct', getProductByName)
 productsRoutes.get('/searchProductByCategory', getProductByCategory)
+productsRoutes.get('/reviewProducts/:id', getReviewProduct)
 productsRoutes.post('/products',authRequired,saveProduct)
+productsRoutes.post('/reviewProducts',insertReviewProduct)
 productsRoutes.put('/products/:id')
 productsRoutes.delete('/products/:id',deleteProductById)
 productsRoutes.put('/products/:id', updateProductById )
