@@ -155,7 +155,7 @@ export async function getReviewProduct(req,res){
       return res.status(200).json(listReviews)
   } catch (error) {
     console.log('A ocurrido el siguiente error', error)
-    return res.status(500).json({error:'Error interno del servidor'})
+    return res.status(500).json({error:'Error interno del servidor', error})
   }
 }
 
