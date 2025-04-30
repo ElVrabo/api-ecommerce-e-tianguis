@@ -6,6 +6,7 @@ import usersRoutes from './routes/users.routes.js';
 import connectDB from './db.js';
 import productsRoutes from './routes/products.routes.js';
 import cartProductsRoutes from './routes/cartProducts.routes.js';
+import favoriteProductsRoutes from './routes/favoriteProducts.routes.js';
 const app = express()
 
 connectDB()
@@ -24,6 +25,7 @@ app.use(morgan('dev'))
 app.use('/api', usersRoutes)
 app.use('/api', productsRoutes)
 app.use('/api', cartProductsRoutes)
+app.use('/api', favoriteProductsRoutes)
 
 
 export default app

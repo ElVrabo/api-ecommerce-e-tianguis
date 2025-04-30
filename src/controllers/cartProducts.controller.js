@@ -15,11 +15,12 @@ export async function getCartProducts(req, res) {
 }
 
 export async function addCartProduct(req, res) {
-  const { name, description, price, stock, file, date } = req.body;
+  const { name, description, category, price, stock, file, date } = req.body;
   try {
     const newCartProduct = new cartProduct({
       name,
       description,
+      category,
       price,
       stock,
       image:file,
