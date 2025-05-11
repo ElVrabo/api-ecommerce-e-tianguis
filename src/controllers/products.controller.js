@@ -117,8 +117,17 @@ export async function deleteProductById(req, res) {
 export async function updateProductById(req, res) {
   const { id } = req.params;
   let productData = req.body;
+  productData.offer = productData.offer === "true" || productData.offer === true;
+
   if(productData.offer){
-    productData.offerPrice = `$ ${productData.offerPrice} MXN`
+    const priceValue = productData.offerPrice
+      ?.toString()
+      .replace(/[^0-9.]/g, ""); // elimina símbolos como $, MXN, espacios
+
+    productData.offerPrice = `$ ${priceValue} MXN`;
+  }else{
+     productData.offerPrice = ""
+     productData.offerExpire = ""
   }
   try {
     const foundProduct = await Product.findByIdAndUpdate(id, productData, {
