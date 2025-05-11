@@ -17,6 +17,9 @@ const productsSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  offerPrice:{
+    type:String
+  },
   stock: {
     type: String,
     required: true,
@@ -24,6 +27,12 @@ const productsSchema = new mongoose.Schema({
   file: {
     type: String,
     required: true,
+  },
+  offer:{
+    type:Boolean
+  },
+  offerExpire:{
+    type:String
   },
   date: {
     type:Date,

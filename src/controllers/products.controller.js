@@ -72,7 +72,7 @@ export async function getProductByCategory(req, res) {
   } catch (error) {}
 }
 export async function saveProduct(req, res) {
-  const { name, description, category, price, stock, file, date } = req.body;
+  const { name, description, category, price, offerPrice, stock, file, offer,offerExpire, date } = req.body;
   try {
     if (!name || !description || !category || !price || !stock || !file) {
       return res
@@ -84,8 +84,11 @@ export async function saveProduct(req, res) {
       description,
       category,
       price : `$ ${price} MXN`,
+      offerPrice:`$ ${offerPrice} MXN`,
       stock,
       file,
+      offer,
+      offerExpire,
       date,
       user: req.user.id,
     });
@@ -113,7 +116,10 @@ export async function deleteProductById(req, res) {
 
 export async function updateProductById(req, res) {
   const { id } = req.params;
-  const productData = req.body;
+  let productData = req.body;
+  if(productData.offer){
+    productData.offerPrice = `$ ${productData.offerPrice} MXN`
+  }
   try {
     const foundProduct = await Product.findByIdAndUpdate(id, productData, {
       new: true,
