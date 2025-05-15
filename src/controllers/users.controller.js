@@ -6,8 +6,6 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-
-
 export async function signUp(req, res) {
   try {
     const {
@@ -24,40 +22,40 @@ export async function signUp(req, res) {
       buyerAddress,
     } = req.body;
 
-    if(role === 'vendedor'){
+    if (role === "vendedor") {
       const existingSeller = await User.findOne({ email });
-    if (existingSeller) {
-      return res.status(409).json({ error: "El correo ya está registrado" });
-    }
-    // Verificar si las contraseñas coinciden
-    if (password !== password2) {
-      return res.status(400).json({ error: "Las contraseñas no coinciden" });
-    }
-    const hashPassword = await bcrypt.hash(password, 10);
+      if (existingSeller) {
+        return res.status(409).json({ error: "El correo ya está registrado" });
+      }
+      // Verificar si las contraseñas coinciden
+      if (password !== password2) {
+        return res.status(400).json({ error: "Las contraseñas no coinciden" });
+      }
+      const hashPassword = await bcrypt.hash(password, 10);
 
-    // Crear nuevo vendedor
-    const newSeller = new User({
-      name,
-      email,
-      phone,
-      role,
-      password: hashPassword,
-      bussinessName,
-      bussinessType,
-      ine,
-      // buyerAddress,
-      date,
-    });
+      // Crear nuevo vendedor
+      const newSeller = new User({
+        name,
+        email,
+        phone,
+        role,
+        password: hashPassword,
+        bussinessName,
+        bussinessType,
+        ine,
+        // buyerAddress,
+        date,
+      });
 
-    await newSeller.save();
-    return res
-    .status(201)
-    .json({ message: "El vendedor se registró con éxito" });
+      await newSeller.save();
+      return res
+        .status(201)
+        .json({ message: "El vendedor se registró con éxito" });
     }
-      
-    const existingBuyer = await User.findOne({email})
-    if(existingBuyer){
-      return res.status(409).json({error:'El correo ya esta registrado'})
+
+    const existingBuyer = await User.findOne({ email });
+    if (existingBuyer) {
+      return res.status(409).json({ error: "El correo ya esta registrado" });
     }
     if (password !== password2) {
       return res.status(400).json({ error: "Las contraseñas no coinciden" });
@@ -69,12 +67,12 @@ export async function signUp(req, res) {
       phone,
       role,
       password: hashPassword,
-      buyerAddress
-  })
-   await newBuyer.save();
-   return res.status(201).json({message:"El comprador se segistro con exito"})
-
-   
+      buyerAddress,
+    });
+    await newBuyer.save();
+    return res
+      .status(201)
+      .json({ message: "El comprador se segistro con exito" });
   } catch (error) {
     console.error("Error en signUpSeller:", error);
     return res.status(500).json({ error: "Error interno del servidor" });
@@ -93,57 +91,102 @@ export async function signIn(req, res) {
     if (!isMatch) {
       return res.status(400).json({ error: "Contraseña incorrecta" });
     }
-    const token = await createAccesToken({ id: foundUserByEmail._id, role:foundUserByEmail.role });
-    res.cookie("token", token);
-    return res.status(200).json({ message: "Iniciaste sesion con exito", user:{
+    /*se crea un token con el id del usuario encontrado y su role*/
+    const token = await createAccesToken({
       id: foundUserByEmail._id,
-      name:foundUserByEmail.name,
-      email:foundUserByEmail.email,
-      phone:foundUserByEmail.phone,
-      role:foundUserByEmail.role,
-      date:foundUserByEmail.date
-    } });
+      role: foundUserByEmail.role,
+    });
+    /*se devuelve el token que contendra el id y el role del usuario*/
+    res.cookie("token", token);
+    return res.status(200).json({
+      message: "Iniciaste sesion con exito",
+      user: {
+        id: foundUserByEmail._id,
+        name: foundUserByEmail.name,
+        email: foundUserByEmail.email,
+        phone: foundUserByEmail.phone,
+        role: foundUserByEmail.role,
+        date: foundUserByEmail.date,
+      },
+    });
   } catch (error) {
-    return res.status(500).json({error:'Error interno del servidor'})
+    return res.status(500).json({ error: "Error interno del servidor" });
   }
 }
 
-export async function getUserById(req,res){
-  const {id} = req.params
+export async function getUserById(req, res) {
+  const { id } = req.params;
   try {
-    const foundUser = await User.findById(id)
-    if(!foundUser){
-      return res.status(404).json({error:"El usuario no se encontro"})
+    const foundUser = await User.findById(id);
+    if (!foundUser) {
+      return res.status(404).json({ error: "El usuario no se encontro" });
     }
-       return res.status(200).json({user:{
+    return res.status(200).json({
+      user: {
         id: foundUser._id,
-      name: foundUser.name,
-      email: foundUser.email,
-      phone: foundUser.phone,
-      role: foundUser.role,
-      date: foundUser.date
-       }})
-  } catch (error) {
-    
-  }
+        name: foundUser.name,
+        email: foundUser.email,
+        phone: foundUser.phone,
+        role: foundUser.role,
+        date: foundUser.date,
+      },
+    });
+  } catch (error) {}
 }
 
-export async function updateUserById(req,res){
-  const {id} = req.params
-  const userData = req.body
+export async function updateUserById(req, res) {
+  const { id } = req.params;
+  const userData = req.body;
   try {
-    const foundUser = await User.findByIdAndUpdate(id,userData,{new:true})
-    if(!foundUser){
-      return res.status(404).json({error:"No se encontro al usuario"})
+    const foundUser = await User.findByIdAndUpdate(id, userData, { new: true });
+    if (!foundUser) {
+      return res.status(404).json({ error: "No se encontro al usuario" });
     }
-     return res.status(200).json({message:'La informacion se actualizo con exito'})
+    return res
+      .status(200)
+      .json({ message: "La informacion se actualizo con exito" });
+  } catch (error) {}
+}
+
+export async function changePassword(req, res) {
+  const { password, newPassword, confirmPassword } = req.body;
+  const userId = req.user.id;
+  // console.log('tipo de dato de la contraseña actual',typeof password)
+  try {
+    const foundUser = await User.findById(userId);
+    // console.log('contraseña ingresada', password)
+    // console.log('contraseña del usuario en la bd', foundUser.password)
+    if (!foundUser) {
+      return res.status(404).json({ error: "No se encontro el usuario" });
+    }
+  
+    const isMatch = await bcrypt.compare(password, foundUser.password);
+    if (!isMatch) {
+      return res
+        .status(409)
+        .json({ error: "Tu contraseña actual no coincide" });
+    }
+    if (newPassword !== confirmPassword) {
+      return res
+        .status(409)
+        .json({ error: "Verifica tu nueva contraseña, no coinciden" });
+    }
+    const hashNewPassword = await bcrypt.hash(newPassword,10)
+      await User.findByIdAndUpdate(
+      userId,
+      {
+        password: hashNewPassword,
+      },
+      { new: true }
+    );
+    return res.status(200).json({message:"La contraseña se actualizo con exito"})
   } catch (error) {
-    
+    console.log("a ocurrido el siguiente error", error);
   }
 }
 export async function verifyToken(req, res) {
   // const token = req.headers["authorization"]?.split(" ")[1];
-  const token = req.cookies.token
+  const token = req.cookies.token;
   if (!token) {
     return res.status(404).json({ error: "No hay token" });
   }
@@ -155,13 +198,15 @@ export async function verifyToken(req, res) {
     if (!foundUser) {
       return res.status(404).json({ message: "No se encontro al usuario" });
     }
-    return res.status(200).json({user:{
-      id: foundUser._id,
-      name: foundUser.name,
-      email: foundUser.email,
-      phone: foundUser.phone,
-      role: foundUser.role,
-      date: foundUser.date
-    }});
+    return res.status(200).json({
+      user: {
+        id: foundUser._id,
+        name: foundUser.name,
+        email: foundUser.email,
+        phone: foundUser.phone,
+        role: foundUser.role,
+        date: foundUser.date,
+      },
+    });
   });
 }

@@ -60,17 +60,80 @@ export async function getProductByName(req, res) {
   } catch (error) {}
 }
 export async function getProductByCategory(req, res) {
-  const { category } = req.query;
-  try {
-    const foundProducts = await Product.find({ category: category });
-    if (foundProducts.length === 0) {
-      return res
-        .status(404)
-        .json({ error: "No hay productos en esa categoria" });
+  const {category} = req.query
+   let products;
+    try {
+        const {token} = req.cookies
+        let user = null
+        if(token){
+            try {
+                user =  jwt.verify(token,process.env.TOKEN_SECRET)
+            } catch (error) {
+                return res.status(401).json({ error: "Token inválido" });
+            }
+        }
+        if(!user){
+            products = await Product.find({category})
+        }else if(user.role === "comprador"){
+            products = await Product.find({category})
+        }else if(user.role === "vendedor"){
+            products = await Product.find({
+                category,
+                user:user.id
+            })
+        }
+        if(products.length === 0){
+          return res.status(404).json({error:'No hay productos en esta categoria'})
+        }
+        return res.status(200).json(products)
+    } catch (error) {
+        return res.status(500).json({ error: "Error del servidor" });
     }
-    return res.status(200).json(foundProducts);
-  } catch (error) {}
 }
+export async function getProductsOffer(req,res){
+  const {token} = req.cookies
+  const offer = true
+  let user;
+  let productsOffer = []
+  if(token){
+    try {
+      /*se verifica el usuario autenticado, si todo sale bien, se almacena el objeto en user*/
+      user = jwt.verify(token, process.env.TOKEN_SECRET)
+      // console.log(user)
+    } catch (error) {
+      return res.status(401).json({error:"Token invalido"})
+    }
+  }
+  if(!user){
+    productsOffer = await Product.find({offer})
+  }else if(user.role === 'comprador'){
+     productsOffer = await Product.find({offer})
+  }else if(user.role === 'vendedor'){
+    productsOffer = await Product.find({offer,user:user.id})
+  }
+  if(productsOffer.length === 0 ){
+    return res.status(404).json({error:"No hay productos en oferta"})
+  }
+   console.log(productsOffer)
+   return res.status(200).json(productsOffer)
+}
+export async function getProductsOfferByCategory(req,res){
+  const {category} = req.query
+  const {token} = req.cookies
+  let productsOfferCategory = []
+  let user;
+  const offer = true
+  try {
+     user = jwt.verify(token,process.env.TOKEN_SECRET)
+  } catch (error) {
+    return res.status(401).json({error:"Token invalido"})
+  }
+  if(user){
+    productsOfferCategory = await Product.find({offer,category,user:user.id})
+  }
+  return res.status(200).json(productsOfferCategory)
+}
+
 export async function saveProduct(req, res) {
   const { name, description, category, price, offerPrice, stock, file, offer,offerExpire, date } = req.body;
   try {

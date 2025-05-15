@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { deleteProductById, getProductByCategory, getProductById, getProductByName, getProducts, getReviewProduct, insertReviewProduct, saveProduct, updateProductById } from "../controllers/products.controller.js";
+import { deleteProductById, getProductByCategory, getProductById, getProductByName, getProducts, getProductsOffer, getProductsOfferByCategory, getReviewProduct, insertReviewProduct, saveProduct, updateProductById } from "../controllers/products.controller.js";
 import {authRequired} from "../middlewares/validatorToken.js"
 import reviewProducts from "../models/reviewProducts.js";
 
@@ -9,6 +9,8 @@ const productsRoutes = Router()
 
 
 productsRoutes.get('/products',getProducts)
+productsRoutes.get('/productsOffer',getProductsOffer)
+productsRoutes.get('/productsOfferCategory',getProductsOfferByCategory)
 productsRoutes.get('/products/:id',getProductById)
 productsRoutes.get('/searchProduct', getProductByName)
 productsRoutes.get('/searchProductByCategory', getProductByCategory)
